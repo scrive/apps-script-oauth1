@@ -348,12 +348,13 @@ Service_.prototype.setAccessToken = function(token, secret) {
  * specified, so that the flow may continue.
  * @returns {string} The authorization URL for a new token.
  */
-Service_.prototype.authorize = function() {
+Service_.prototype.authorize = function(optToken) {
+  var token = optToken || null
   validate_({
     'Authorization URL': this.authorizationUrl_
   });
 
-  var token = this.getRequestToken_();
+  var token = this.getRequestToken_(token);
   this.saveToken_(token);
 
   var oauthParams = {
@@ -435,7 +436,8 @@ Service_.prototype.reset = function() {
  * Get a new request token.
  * @returns {Object} A request token.
  */
-Service_.prototype.getRequestToken_ = function() {
+Service_.prototype.getRequestToken_ = function(optToken) {
+  var token = optToken || null
   validate_({
     'Request Token URL': this.requestTokenUrl_,
     'Method': this.method_,
@@ -450,7 +452,7 @@ Service_.prototype.getRequestToken_ = function() {
     oauthParams.oauth_callback = this.getCallbackUrl();
   }
 
-  var response = this.fetchInternal_(url, params, null, oauthParams);
+  var response = this.fetchInternal_(url, params, token, oauthParams);
   if (response.getResponseCode() >= 400) {
     throw 'Error starting OAuth flow: ' + response.getContentText();
   }
