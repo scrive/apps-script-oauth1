@@ -529,40 +529,42 @@ Service_.prototype.fetchInternal_ = function(url, params, opt_token,
     url: url,
     method: params.method
   };
-  if (params.payload && (!params.contentType ||
-      params.contentType == 'application/x-www-form-urlencoded')) {
-    var data = params.payload;
-    if (typeof(data) == 'string') {
-      data = signer.deParam(data);
-    }
-    request.data = data;
-  }
+  // if (params.payload && (!params.contentType ||
+  //     params.contentType == 'application/x-www-form-urlencoded')) {
+  //   var data = params.payload;
+  //   if (typeof(data) == 'string') {
+  //     data = signer.deParam(data);
+  //   }
+  //   request.data = data;
+  // }
   oauthParams = signer.authorize(request, token, oauthParams);
-  switch (this.paramLocation_) {
-    case 'auth-header':
-      params.headers = _.extend({}, params.headers,
+  params.headers = _.extend({}, params.headers,
           signer.toHeader(oauthParams));
-      break;
-    case 'uri-query':
-      url = buildUrl_(url, oauthParams);
-      break;
-    case 'post-body':
-      params.payload = _.extend({}, params.payload, oauthParams);
-      break;
-    default:
-      throw 'Unknown param location: ' + this.paramLocation_;
-  }
-  if (params.payload && (!params.contentType ||
-      params.contentType == 'application/x-www-form-urlencoded')) {
-    // Disable UrlFetchApp escaping and use the signer's escaping instead.
-    // This will ensure that the escaping is consistent between the signature and the request.
-    var payload = request.data;
-    payload = Object.keys(payload).map(function(key) {
-      return signer.percentEncode(key) + '=' + signer.percentEncode(payload[key]);
-    }).join('&');
-    params.payload = payload;
-    params.escaping = false;
-  }
+  // switch (this.paramLocation_) {
+  //   case 'auth-header':
+  //     params.headers = _.extend({}, params.headers,
+  //         signer.toHeader(oauthParams));
+  //     break;
+  //   case 'uri-query':
+  //     url = buildUrl_(url, oauthParams);
+  //     break;
+  //   case 'post-body':
+  //     params.payload = _.extend({}, params.payload, oauthParams);
+  //     break;
+  //   default:
+  //     throw 'Unknown param location: ' + this.paramLocation_;
+  // }
+  // if (params.payload && (!params.contentType ||
+  //     params.contentType == 'application/x-www-form-urlencoded')) {
+  //   // Disable UrlFetchApp escaping and use the signer's escaping instead.
+  //   // This will ensure that the escaping is consistent between the signature and the request.
+  //   var payload = request.data;
+  //   payload = Object.keys(payload).map(function(key) {
+  //     return signer.percentEncode(key) + '=' + signer.percentEncode(payload[key]);
+  //   }).join('&');
+  //   params.payload = payload;
+  //   params.escaping = false;
+  // }
   return UrlFetchApp.fetch(url, params);
 };
 
